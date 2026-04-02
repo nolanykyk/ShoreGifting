@@ -1,0 +1,15 @@
+com\shoregifting\gui\GuiItems.class
+com\shoregifting\util\ItemStacks.class
+com\shoregifting\gui\GiftSendGui.class
+com\shoregifting\listener\GiftInventoryListener.class
+com\shoregifting\listener\PlayerJoinListener.class
+com\shoregifting\ShoreGiftingPlugin.class
+com\shoregifting\gui\GiftMenuHolder$Kind.class
+com\shoregifting\gui\GiftMenuHolder.class
+com\shoregifting\storage\GiftStorage.class
+com\shoregifting\util\TextUtil.class
+com\shoregifting\gui\GiftClaimGui.class
+com\shoregifting\session\StagedSend.class
+com\shoregifting\command\GiftCommand.class
+com\shoregifting\command\GiftClaimCommand.class
+com\shoregifting\model\PendingGift.class

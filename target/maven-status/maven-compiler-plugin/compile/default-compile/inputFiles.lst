@@ -1,0 +1,14 @@
+C:\Users\nolan\Documents\GitHub\ShoreGifting\src\main\java\com\shoregifting\command\GiftClaimCommand.java
+C:\Users\nolan\Documents\GitHub\ShoreGifting\src\main\java\com\shoregifting\command\GiftCommand.java
+C:\Users\nolan\Documents\GitHub\ShoreGifting\src\main\java\com\shoregifting\gui\GiftClaimGui.java
+C:\Users\nolan\Documents\GitHub\ShoreGifting\src\main\java\com\shoregifting\gui\GiftMenuHolder.java
+C:\Users\nolan\Documents\GitHub\ShoreGifting\src\main\java\com\shoregifting\gui\GiftSendGui.java
+C:\Users\nolan\Documents\GitHub\ShoreGifting\src\main\java\com\shoregifting\gui\GuiItems.java
+C:\Users\nolan\Documents\GitHub\ShoreGifting\src\main\java\com\shoregifting\listener\GiftInventoryListener.java
+C:\Users\nolan\Documents\GitHub\ShoreGifting\src\main\java\com\shoregifting\listener\PlayerJoinListener.java
+C:\Users\nolan\Documents\GitHub\ShoreGifting\src\main\java\com\shoregifting\model\PendingGift.java
+C:\Users\nolan\Documents\GitHub\ShoreGifting\src\main\java\com\shoregifting\session\StagedSend.java
+C:\Users\nolan\Documents\GitHub\ShoreGifting\src\main\java\com\shoregifting\ShoreGiftingPlugin.java
+C:\Users\nolan\Documents\GitHub\ShoreGifting\src\main\java\com\shoregifting\storage\GiftStorage.java
+C:\Users\nolan\Documents\GitHub\ShoreGifting\src\main\java\com\shoregifting\util\ItemStacks.java
+C:\Users\nolan\Documents\GitHub\ShoreGifting\src\main\java\com\shoregifting\util\TextUtil.java

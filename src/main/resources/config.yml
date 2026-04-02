@@ -1,0 +1,146 @@
+# ShoreGifting – send items through a GUI; recipients claim with /giftclaim.
+# Style aligned with ShoreDice: dark gray panels, accent hex colors, structured lore.
+
+enabled: true
+
+messages:
+  prefix: '<#75C8FF><bold>GIFT</bold> <dark_gray>▶</dark_gray> <reset>'
+  only-players: '%prefix%<gray>Only players can use this command!'
+  usage-gift: '%prefix%<gray>Usage: <aqua>/<label> <#7DFFA8><player></#7DFFA8>'
+  usage-claim: '%prefix%<gray>Usage: <aqua>/<label>'
+  target-not-found: '%prefix%<gray>Could not find player <white>%input%<gray>.'
+  cannot-gift-self: '%prefix%<gray>You cannot send a gift to <#FF0048>yourself<gray>.'
+  target-offline-queued: '%prefix%<gray><gold>%target% <gray>is offline; the gift will be waiting when they join.'
+  send-success-sender: '%prefix%<gray>You sent a gift to <#7DFFA8>%target%<gray>.'
+  send-success-target-online: '%prefix%<#FFC242>You have a pending gift! <gray>Use <aqua>/giftclaim <gray>or click this message.'
+  no-pending: '%prefix%<gray>You have no pending gifts.'
+  claim-success: '%prefix%<gray>Claimed <#7DFFA8>%amount% <gray>item(s).'
+  claim-one: '%prefix%<gray>Claimed a gift from <#7DFFA8>%sender%<gray>.'
+  staging-empty: '%prefix%<gray>Put at least one item in the gift chest, then close it to continue.'
+  invalid-item: '%prefix%<#FF0048>That item cannot be sent.'
+  inventory-full: '%prefix%<#FF0048>Your inventory is too full to claim that.'
+  join-has-gifts: '%prefix%<#FFC242>You have pending gift(s)! <gray>Run <aqua>/giftclaim'
+  reload: '%prefix%<#7DFFA8>Configuration reloaded!'
+  no-permission: '%prefix%<gray>You do not have permission.'
+  plugin-disabled: '%prefix%<gray>Gifting is currently disabled.'
+
+join:
+  run-command: /giftclaim
+
+# Step 1: empty 3-row chest (27 slots). Place items, then close to open the confirm screen.
+send-staging:
+  inventory-title: '<dark_gray>Gift <dark_gray>| <gray>Place items'
+  size: 27
+
+# Step 2: confirm or cancel (items are held server-side until you choose).
+send-confirm-gui:
+  inventory-title: '<dark_gray>Gift <dark_gray>| <gray>Confirm'
+  size: 27
+  confirm-slot: 15
+  cancel-slot: 11
+  info-slot: 13
+  filler:
+    material: GRAY_STAINED_GLASS_PANE
+    name: ' '
+    lore: []
+    glow: false
+  info:
+    material: PAPER
+    name: '<#7DFFA8><bold>SEND TO <#FFD700>%target%'
+    lore:
+      - '<dark_gray>Review'
+      - ''
+      - '<aqua>Information:'
+      - '<white>You are sending <#FFD700>%count% <white>stack(s).'
+      - '<gray>Confirm on the right, or cancel on the left to get items back.'
+      - ''
+      - '<#FFD700>☀ <white>Recipient: <#FFD700>%target%'
+    glow: true
+  confirm:
+    material: GOLD_BLOCK
+    name: '<#7DFFA8><bold>CONFIRM SEND</bold>'
+    lore:
+      - '<dark_gray>Send all'
+      - ''
+      - '<aqua>Information:'
+      - '<white>Queue every stack for'
+      - '<#7DFFA8>%target%<white>.'
+      - ''
+      - '<gold>▶ <yellow><bold><underlined>CLICK</underlined></bold> <yellow>To Send'
+    glow: true
+  cancel:
+    material: BARRIER
+    name: '<#FF0048><bold>CANCEL</bold>'
+    lore:
+      - '<dark_gray>Abort'
+      - ''
+      - '<aqua>Information:'
+      - '<white>Return all items to'
+      - '<white>your inventory.'
+      - ''
+      - '<gold>▶ <yellow><bold><underlined>CLICK</underlined></bold> <yellow>To Cancel'
+    glow: false
+
+claim-gui:
+  inventory-title: '<dark_gray>Gift <dark_gray>| <gray>Claim'
+  size: 27
+  gift-slots:
+    - 10
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
+    - 16
+  prev-slot: 18
+  next-slot: 26
+  page-info-slot: 4
+  filler:
+    material: GRAY_STAINED_GLASS_PANE
+    name: ' '
+    lore: []
+    glow: false
+  page-info:
+    material: PAPER
+    name: '<#7DFFA8><bold>PENDING GIFTS</bold>'
+    lore:
+      - '<dark_gray>Your inbox'
+      - ''
+      - '<aqua>Information:'
+      - '<white>Click an item to claim it'
+      - '<white>or use navigation arrows.'
+      - ''
+      - '<#00F0FF>⚡ <white>Page: <#00F0FF>%page% <dark_gray>/ <gray>%pages%'
+      - '<#FFD700>☀ <white>Total waiting: <#FFD700>%total%'
+    glow: true
+  nav-prev:
+    material: ARROW
+    name: '<#00D9FF><bold>PREVIOUS PAGE</bold>'
+    lore:
+      - '<dark_gray>Navigation'
+      - ''
+      - '<aqua>Information:'
+      - '<white>Go to the previous page'
+      - '<white>of pending gifts.'
+    glow: false
+  nav-next:
+    material: ARROW
+    name: '<#FF8A00><bold>NEXT PAGE</bold>'
+    lore:
+      - '<dark_gray>Navigation'
+      - ''
+      - '<aqua>Information:'
+      - '<white>Go to the next page'
+      - '<white>of pending gifts.'
+    glow: false
+
+sounds:
+  open: UI_BUTTON_CLICK
+  open-volume: 0.4
+  open-pitch: 1.2
+  confirm: ENTITY_EXPERIENCE_ORB_PICKUP
+  confirm-volume: 0.35
+  confirm-pitch: 1.0
+  claim: BLOCK_NOTE_BLOCK_CHIME
+  claim-volume: 0.35
+  claim-pitch: 1.0

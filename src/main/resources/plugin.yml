@@ -1,0 +1,27 @@
+name: ShoreGifting
+version: '1.0.0'
+main: com.shoregifting.ShoreGiftingPlugin
+api-version: '1.21'
+authors: [ ShoreGifting ]
+description: Send items to players through a gift GUI; recipients claim with /giftclaim.
+
+commands:
+  gift:
+    description: Open the gift menu to send an item to a player.
+    usage: /<command> <player>
+    permission: shoregifting.gift
+  giftclaim:
+    description: Open your pending gifts and claim items.
+    usage: /<command>
+    permission: shoregifting.claim
+
+permissions:
+  shoregifting.gift:
+    description: Use /gift to send items.
+    default: true
+  shoregifting.claim:
+    description: Use /giftclaim to receive gifts.
+    default: true
+  shoregifting.admin:
+    description: Reload configuration.
+    default: op
