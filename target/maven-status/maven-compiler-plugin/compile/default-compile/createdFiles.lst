@@ -8,7 +8,6 @@ com\shoregifting\gui\GiftMenuHolder$Kind.class
 com\shoregifting\gui\GiftMenuHolder.class
 com\shoregifting\storage\GiftStorage.class
 com\shoregifting\util\TextUtil.class
-com\shoregifting\gui\GiftClaimGui.class
 com\shoregifting\session\StagedSend.class
 com\shoregifting\command\GiftCommand.class
 com\shoregifting\command\GiftClaimCommand.class

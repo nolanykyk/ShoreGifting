@@ -15,17 +15,14 @@ public final class GiftMenuHolder implements InventoryHolder {
         /** Empty 3-row chest; player places items freely. */
         SEND_STAGING,
         /** Confirm or cancel sending staged items. */
-        SEND_CONFIRM,
-        CLAIM
+        SEND_CONFIRM
     }
 
     private final Kind kind;
     private final UUID viewerId;
     private final @Nullable UUID sendTargetId;
-    private int claimPage;
     private boolean sendCompleted;
     private final AtomicBoolean sendConfirming = new AtomicBoolean(false);
-    private final AtomicBoolean claimProcessing = new AtomicBoolean(false);
     private final Inventory inventory;
 
     public GiftMenuHolder(
@@ -34,14 +31,8 @@ public final class GiftMenuHolder implements InventoryHolder {
             @Nullable UUID sendTargetId,
             @NotNull Component title,
             int size) {
-        if (kind == Kind.CLAIM) {
-            if (sendTargetId != null) {
-                throw new IllegalArgumentException("claim menu has no send target");
-            }
-        } else {
-            if (sendTargetId == null) {
-                throw new IllegalArgumentException("send menu requires target");
-            }
+        if (sendTargetId == null) {
+            throw new IllegalArgumentException("send menu requires target");
         }
         this.kind = kind;
         this.viewerId = viewerId;
@@ -61,14 +52,6 @@ public final class GiftMenuHolder implements InventoryHolder {
         return sendTargetId;
     }
 
-    public int claimPage() {
-        return claimPage;
-    }
-
-    public void setClaimPage(int claimPage) {
-        this.claimPage = claimPage;
-    }
-
     public boolean sendCompleted() {
         return sendCompleted;
     }
@@ -83,14 +66,6 @@ public final class GiftMenuHolder implements InventoryHolder {
 
     public void endSendConfirm() {
         sendConfirming.set(false);
-    }
-
-    public boolean tryBeginClaim() {
-        return claimProcessing.compareAndSet(false, true);
-    }
-
-    public void endClaim() {
-        claimProcessing.set(false);
     }
 
     @Override

@@ -1,4 +1,4 @@
-# ShoreGifting – send items through a GUI; recipients claim with /giftclaim.
+# ShoreGifting – send items through a GUI; recipients claim all pending stacks with /giftclaim (no claim GUI).
 # Style aligned with ShoreDice: dark gray panels, accent hex colors, structured lore.
 
 enabled: true
@@ -18,7 +18,7 @@ messages:
   claim-one: '%prefix%<gray>Claimed a gift from <#7DFFA8>%sender%<gray>.'
   staging-empty: '%prefix%<gray>Put at least one item in the gift chest, then close it to continue.'
   invalid-item: '%prefix%<#FF0048>That item cannot be sent.'
-  inventory-full: '%prefix%<#FF0048>Your inventory is too full to claim that.'
+  inventory-full: '%prefix%<#FF0048>Your inventory is too full to claim all pending gifts. Free space, then try again.'
   join-has-gifts: '%prefix%<#FFC242>You have pending gift(s)! <gray>Run <aqua>/giftclaim'
   reload: '%prefix%<#7DFFA8>Configuration reloaded!'
   no-permission: '%prefix%<gray>You do not have permission.'
@@ -81,6 +81,7 @@ send-confirm-gui:
       - '<gold>▶ <yellow><bold><underlined>CLICK</underlined></bold> <yellow>To Cancel'
     glow: false
 
+# Unused: /giftclaim grants items directly. Safe to delete this block.
 claim-gui:
   inventory-title: '<dark_gray>Gift <dark_gray>| <gray>Claim'
   size: 27

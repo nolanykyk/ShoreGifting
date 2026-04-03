@@ -167,4 +167,50 @@ public final class GiftStorage {
             return queue.getOrDefault(recipient, List.of()).isEmpty();
         }
     }
+
+    /**
+     * Removes and returns all pending gifts for the recipient in queue order. Empty list if none.
+     */
+    public @NotNull List<PendingGift> takeAll(@NotNull UUID recipient) {
+        synchronized (lock) {
+            List<PendingGift> list = queue.remove(recipient);
+            if (list == null || list.isEmpty()) {
+                return List.of();
+            }
+            List<PendingGift> copy = new ArrayList<>(list.size());
+            for (PendingGift g : list) {
+                copy.add(g.copyItem());
+            }
+            saveUnlocked();
+            return copy;
+        }
+    }
+
+    /** Prepends gifts (FIFO order preserved relative to {@code gifts}). Used when rolling back a failed claim. */
+    public void addAllToFront(@NotNull UUID recipient, @NotNull List<PendingGift> gifts) {
+        if (gifts.isEmpty()) {
+            return;
+        }
+        synchronized (lock) {
+            List<PendingGift> existing = queue.computeIfAbsent(recipient, k -> new ArrayList<>());
+            for (int i = gifts.size() - 1; i >= 0; i--) {
+                existing.add(0, gifts.get(i).copyItem());
+            }
+            saveUnlocked();
+        }
+    }
+
+    /** Appends gifts to the end of the queue (same order as {@code gifts}). */
+    public void addAllToEnd(@NotNull UUID recipient, @NotNull List<PendingGift> gifts) {
+        if (gifts.isEmpty()) {
+            return;
+        }
+        synchronized (lock) {
+            List<PendingGift> existing = queue.computeIfAbsent(recipient, k -> new ArrayList<>());
+            for (PendingGift g : gifts) {
+                existing.add(g.copyItem());
+            }
+            saveUnlocked();
+        }
+    }
 }

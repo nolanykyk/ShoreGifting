@@ -1,7 +1,6 @@
 package com.shoregifting.listener;
 
 import com.shoregifting.ShoreGiftingPlugin;
-import com.shoregifting.gui.GiftClaimGui;
 import com.shoregifting.gui.GiftMenuHolder;
 import com.shoregifting.gui.GiftSendGui;
 import com.shoregifting.model.PendingGift;
@@ -9,7 +8,6 @@ import com.shoregifting.session.StagedSend;
 import com.shoregifting.util.ItemStacks;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,10 +20,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public final class GiftInventoryListener implements Listener {
 
@@ -53,9 +48,7 @@ public final class GiftInventoryListener implements Listener {
         }
         if (holder.kind() == GiftMenuHolder.Kind.SEND_CONFIRM) {
             handleSendConfirmClick(event, player, holder);
-            return;
         }
-        handleClaimClick(event, player, holder);
     }
 
     private void handleSendConfirmClick(
@@ -144,105 +137,6 @@ public final class GiftInventoryListener implements Listener {
         holder.setSendCompleted(true);
         player.closeInventory();
         plugin.playSound(player, "open");
-    }
-
-    private void handleClaimClick(@NotNull InventoryClickEvent event, @NotNull Player player, @NotNull GiftMenuHolder holder) {
-        ConfigurationSection root = plugin.getConfig().getConfigurationSection("claim-gui");
-        if (root == null) {
-            event.setCancelled(true);
-            return;
-        }
-        List<Integer> giftSlots = root.getIntegerList("gift-slots");
-        if (giftSlots.isEmpty()) {
-            giftSlots = List.of(10, 11, 12, 13, 14, 15, 16);
-        }
-        int pageSize = giftSlots.size();
-        int prevSlot = root.getInt("prev-slot", 18);
-        int nextSlot = root.getInt("next-slot", 26);
-        int topSize = event.getView().getTopInventory().getSize();
-        int rawSlot = event.getRawSlot();
-
-        if (rawSlot >= topSize) {
-            if (event.getClick().isShiftClick()) {
-                event.setCancelled(true);
-            }
-            return;
-        }
-        event.setCancelled(true);
-
-        int page = holder.claimPage();
-        if (rawSlot == prevSlot) {
-            if (page > 0) {
-                plugin.runNextTick(() -> GiftClaimGui.open(plugin, player, page - 1));
-            }
-            return;
-        }
-        if (rawSlot == nextSlot) {
-            int total = plugin.giftStorage().count(player.getUniqueId());
-            int pages = Math.max(1, (int) Math.ceil(total / (double) pageSize));
-            if (page < pages - 1) {
-                plugin.runNextTick(() -> GiftClaimGui.open(plugin, player, page + 1));
-            }
-            return;
-        }
-        int idxInPage = giftSlots.indexOf(rawSlot);
-        if (idxInPage < 0) {
-            return;
-        }
-
-        if (!holder.tryBeginClaim()) {
-            return;
-        }
-        try {
-            ItemStack serverItem = event.getView().getTopInventory().getItem(rawSlot);
-            UUID giftId = readGiftId(serverItem);
-            if (giftId == null) {
-                plugin.runNextTick(() -> GiftClaimGui.open(plugin, player, holder.claimPage()));
-                return;
-            }
-            PendingGift removed = plugin.giftStorage().removeByGiftId(player.getUniqueId(), giftId);
-            if (removed == null) {
-                plugin.runNextTick(() -> GiftClaimGui.open(plugin, player, holder.claimPage()));
-                return;
-            }
-            ItemStack give = ItemStacks.normalize(removed.item().clone());
-            if (!ItemStacks.isValidGiftStack(give)) {
-                plugin.runNextTick(() -> GiftClaimGui.open(plugin, player, holder.claimPage()));
-                return;
-            }
-            ItemStacks.addRestToInventoryOrDrop(player, give);
-            plugin.playSound(player, "claim");
-            plugin.sendMessage(player, "claim-one", "sender", removed.senderName());
-            int stayPage = page;
-            plugin.runNextTick(() -> {
-                if (plugin.giftStorage().count(player.getUniqueId()) <= 0) {
-                    player.closeInventory();
-                } else {
-                    GiftClaimGui.open(plugin, player, stayPage);
-                }
-            });
-        } finally {
-            holder.endClaim();
-        }
-    }
-
-    private @Nullable UUID readGiftId(@Nullable ItemStack stack) {
-        if (stack == null || stack.getType().isAir()) {
-            return null;
-        }
-        ItemMeta meta = stack.getItemMeta();
-        if (meta == null) {
-            return null;
-        }
-        String s = meta.getPersistentDataContainer().get(plugin.giftIdKey(), PersistentDataType.STRING);
-        if (s == null) {
-            return null;
-        }
-        try {
-            return UUID.fromString(s);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
@@ -342,6 +236,7 @@ public final class GiftInventoryListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
     public void onQuit(@NotNull PlayerQuitEvent event) {
+        plugin.clearClaimLock(event.getPlayer().getUniqueId());
         plugin.refundStagedSend(event.getPlayer());
     }
 

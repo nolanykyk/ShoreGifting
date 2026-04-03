@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
-import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
@@ -27,13 +27,12 @@ import org.jetbrains.annotations.Nullable;
 public final class ShoreGiftingPlugin extends JavaPlugin {
 
     private GiftStorage giftStorage;
-    private NamespacedKey giftIdKey;
     private final Object stagedLock = new Object();
     private final Map<UUID, StagedSend> stagedSends = new HashMap<>();
+    private final ConcurrentHashMap<UUID, Object> claimLocks = new ConcurrentHashMap<>();
 
     @Override
     public void onEnable() {
-        giftIdKey = new NamespacedKey(this, "pending_gift_id");
         saveDefaultConfig();
         giftStorage = new GiftStorage(this);
         giftStorage.load();
@@ -72,9 +71,13 @@ public final class ShoreGiftingPlugin extends JavaPlugin {
         return giftStorage;
     }
 
-    /** PDC key for claim GUI items; prevents index-based claim mismatch and spoofing. */
-    public @NotNull NamespacedKey giftIdKey() {
-        return giftIdKey;
+    /** Per-player lock so {@code /giftclaim} cannot run twice concurrently (no dupes). */
+    public @NotNull Object claimLock(@NotNull UUID playerId) {
+        return claimLocks.computeIfAbsent(playerId, k -> new Object());
+    }
+
+    public void clearClaimLock(@NotNull UUID playerId) {
+        claimLocks.remove(playerId);
     }
 
     public void runNextTick(@NotNull Runnable runnable) {
