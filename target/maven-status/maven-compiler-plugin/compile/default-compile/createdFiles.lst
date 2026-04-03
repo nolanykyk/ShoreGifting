@@ -1,3 +1,4 @@
+com\shoregifting\command\GiftClaimTabCompleter.class
 com\shoregifting\gui\GuiItems.class
 com\shoregifting\util\ItemStacks.class
 com\shoregifting\gui\GiftSendGui.class

@@ -1,6 +1,7 @@
 package com.shoregifting;
 
 import com.shoregifting.command.GiftClaimCommand;
+import com.shoregifting.command.GiftClaimTabCompleter;
 import com.shoregifting.command.GiftCommand;
 import com.shoregifting.listener.GiftInventoryListener;
 import com.shoregifting.listener.PlayerJoinListener;
@@ -64,6 +65,7 @@ public final class ShoreGiftingPlugin extends JavaPlugin {
         PluginCommand claim = getCommand("giftclaim");
         if (claim != null) {
             claim.setExecutor(new GiftClaimCommand(this));
+            claim.setTabCompleter(new GiftClaimTabCompleter(this));
         }
     }
 
@@ -107,8 +109,11 @@ public final class ShoreGiftingPlugin extends JavaPlugin {
         if (!cmd.startsWith("/")) {
             cmd = "/" + cmd;
         }
+        if (!cmd.endsWith(" ")) {
+            cmd = cmd + " ";
+        }
         Component base = message("join-has-gifts");
-        player.sendMessage(base.clickEvent(ClickEvent.runCommand(cmd)));
+        player.sendMessage(base.clickEvent(ClickEvent.suggestCommand(cmd)));
     }
 
     public void putStagedSend(@NotNull Player player, @NotNull StagedSend send) {

@@ -1,25 +1,31 @@
-# ShoreGifting – send items through a GUI; recipients claim all pending stacks with /giftclaim (no claim GUI).
+# ShoreGifting – send items through a GUI; recipients claim pending stacks per sender with /giftclaim <player> (no claim GUI).
 # Style aligned with ShoreDice: dark gray panels, accent hex colors, structured lore.
 
 enabled: true
+
+# Max pending stacks one player can queue to the same recipient (36 = hotbar + main inventory).
+limits:
+  max-pending-stacks-per-sender: 36
 
 messages:
   prefix: '<#75C8FF><bold>GIFT</bold> <dark_gray>▶</dark_gray> <reset>'
   only-players: '%prefix%<gray>Only players can use this command!'
   usage-gift: '%prefix%<gray>Usage: <aqua>/<label> <#7DFFA8><player></#7DFFA8>'
-  usage-claim: '%prefix%<gray>Usage: <aqua>/<label>'
+  usage-claim: '%prefix%<gray>Usage: <aqua>/%label% <#7DFFA8>sender</#7DFFA8>'
   target-not-found: '%prefix%<gray>Could not find player <white>%input%<gray>.'
   cannot-gift-self: '%prefix%<gray>You cannot send a gift to <#FF0048>yourself<gray>.'
   target-offline-queued: '%prefix%<gray><gold>%target% <gray>is offline; the gift will be waiting when they join.'
+  send-limit-reached: '%prefix%<#FF0048>You can only queue up to <white>%limit% <#FF0048>stacks per person from you <gray>(%current% waiting, this send is %incoming%). <gray>They must claim some first.'
   send-success-sender: '%prefix%<gray>You sent a gift to <#7DFFA8>%target%<gray>.'
-  send-success-target-online: '%prefix%<#FFC242>You have a pending gift! <gray>Use <aqua>/giftclaim <gray>or click this message.'
+  send-success-target-online: '%prefix%<#FFC242>You have a pending gift! <gray>Use <aqua>/giftclaim %player% <gray>or click this message.'
   no-pending: '%prefix%<gray>You have no pending gifts.'
-  claim-success: '%prefix%<gray>Claimed <#7DFFA8>%amount% <gray>item(s).'
+  claim-success: '%prefix%<gray>Claimed <#7DFFA8>%amount% <gray>item(s) from <#7DFFA8>%sender%<gray>.'
   claim-one: '%prefix%<gray>Claimed a gift from <#7DFFA8>%sender%<gray>.'
   staging-empty: '%prefix%<gray>Put at least one item in the gift chest, then close it to continue.'
   invalid-item: '%prefix%<#FF0048>That item cannot be sent.'
-  inventory-full: '%prefix%<#FF0048>Your inventory is too full to claim all pending gifts. Free space, then try again.'
-  join-has-gifts: '%prefix%<#FFC242>You have pending gift(s)! <gray>Run <aqua>/giftclaim'
+  claim-unknown-sender: '%prefix%<gray>No pending gifts from <white>%input%<gray>.'
+  inventory-full: '%prefix%<#FF0048>Your inventory is too full to claim these gifts. Free space, then try again.'
+  join-has-gifts: '%prefix%<#FFC242>You have pending gift(s)! <gray>Run <aqua>/giftclaim <gray>and tab-complete a sender, or click to start.'
   reload: '%prefix%<#7DFFA8>Configuration reloaded!'
   no-permission: '%prefix%<gray>You do not have permission.'
   plugin-disabled: '%prefix%<gray>Gifting is currently disabled.'

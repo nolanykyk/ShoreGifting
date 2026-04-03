@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -126,6 +127,23 @@ public final class GiftStorage {
         }
     }
 
+    /** Number of pending gift stacks from {@code senderId} to {@code recipient}. */
+    public int countFromSender(@NotNull UUID recipient, @NotNull UUID senderId) {
+        synchronized (lock) {
+            List<PendingGift> list = queue.get(recipient);
+            if (list == null || list.isEmpty()) {
+                return 0;
+            }
+            int n = 0;
+            for (PendingGift g : list) {
+                if (g.senderId().equals(senderId)) {
+                    n++;
+                }
+            }
+            return n;
+        }
+    }
+
     public void addGift(@NotNull UUID recipient, @NotNull PendingGift gift) {
         synchronized (lock) {
             ItemStack it = gift.item();
@@ -183,6 +201,58 @@ public final class GiftStorage {
             }
             saveUnlocked();
             return copy;
+        }
+    }
+
+    /**
+     * Removes and returns all pending gifts from {@code senderId} for {@code recipient}, preserving queue order
+     * among the taken gifts. Other senders' gifts stay in place.
+     */
+    public @NotNull List<PendingGift> takeFromSender(@NotNull UUID recipient, @NotNull UUID senderId) {
+        synchronized (lock) {
+            List<PendingGift> list = queue.get(recipient);
+            if (list == null || list.isEmpty()) {
+                return List.of();
+            }
+            List<PendingGift> kept = new ArrayList<>(list.size());
+            List<PendingGift> taken = new ArrayList<>();
+            for (PendingGift g : list) {
+                if (g.senderId().equals(senderId)) {
+                    taken.add(g.copyItem());
+                } else {
+                    kept.add(g);
+                }
+            }
+            if (taken.isEmpty()) {
+                return List.of();
+            }
+            if (kept.isEmpty()) {
+                queue.remove(recipient);
+            } else {
+                queue.put(recipient, kept);
+            }
+            saveUnlocked();
+            return taken;
+        }
+    }
+
+    /**
+     * Unique sender display names in queue order (first occurrence per sender), for tab completion.
+     */
+    public @NotNull List<String> pendingSenderNamesForTab(@NotNull UUID recipient) {
+        synchronized (lock) {
+            List<PendingGift> list = queue.get(recipient);
+            if (list == null || list.isEmpty()) {
+                return List.of();
+            }
+            LinkedHashSet<UUID> seen = new LinkedHashSet<>();
+            List<String> names = new ArrayList<>();
+            for (PendingGift g : list) {
+                if (seen.add(g.senderId())) {
+                    names.add(g.senderName());
+                }
+            }
+            return Collections.unmodifiableList(names);
         }
     }
 

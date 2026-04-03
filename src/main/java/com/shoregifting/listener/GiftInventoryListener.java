@@ -107,6 +107,21 @@ public final class GiftInventoryListener implements Listener {
                 }
                 toSend.add(norm);
             }
+            int maxPerSender = plugin.getConfig().getInt("limits.max-pending-stacks-per-sender", 36);
+            int already = plugin.giftStorage().countFromSender(staged.recipientId(), player.getUniqueId());
+            if (already + toSend.size() > maxPerSender) {
+                plugin.sendMessage(
+                        player,
+                        "send-limit-reached",
+                        "limit",
+                        String.valueOf(maxPerSender),
+                        "current",
+                        String.valueOf(already),
+                        "incoming",
+                        String.valueOf(toSend.size()));
+                plugin.putStagedSend(player, staged);
+                return;
+            }
             for (ItemStack norm : toSend) {
                 PendingGift gift = PendingGift.create(player.getUniqueId(), senderName, norm);
                 plugin.giftStorage().addGift(staged.recipientId(), gift);
@@ -122,7 +137,7 @@ public final class GiftInventoryListener implements Listener {
             }
             Player online = target.getPlayer();
             if (online != null && online.isOnline()) {
-                plugin.sendMessage(online, "send-success-target-online");
+                plugin.sendMessage(online, "send-success-target-online", "player", senderName);
             }
         } finally {
             holder.endSendConfirm();
@@ -220,6 +235,21 @@ public final class GiftInventoryListener implements Listener {
             return;
         }
         if (holder.sendTargetId() == null) {
+            plugin.giveStacksOrDrop(player, valid);
+            return;
+        }
+        int maxPerSender = plugin.getConfig().getInt("limits.max-pending-stacks-per-sender", 36);
+        int already = plugin.giftStorage().countFromSender(holder.sendTargetId(), player.getUniqueId());
+        if (already + valid.size() > maxPerSender) {
+            plugin.sendMessage(
+                    player,
+                    "send-limit-reached",
+                    "limit",
+                    String.valueOf(maxPerSender),
+                    "current",
+                    String.valueOf(already),
+                    "incoming",
+                    String.valueOf(valid.size()));
             plugin.giveStacksOrDrop(player, valid);
             return;
         }

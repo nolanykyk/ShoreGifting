@@ -3,7 +3,7 @@ version: '1.0.0'
 main: com.shoregifting.ShoreGiftingPlugin
 api-version: '1.21'
 authors: [ ShoreGifting ]
-description: Send items to players through a gift GUI; recipients claim all pending gifts with /giftclaim.
+description: Send items to players through a gift GUI; recipients claim pending gifts per sender with /giftclaim.
 
 commands:
   gift:
@@ -11,8 +11,8 @@ commands:
     usage: /<command> <player>
     permission: shoregifting.gift
   giftclaim:
-    description: Claim all pending gifts into your inventory if you have enough space.
-    usage: /<command>
+    description: Claim pending gifts from one sender if your inventory has enough space.
+    usage: /<command> <sender>
     permission: shoregifting.claim
 
 permissions:
